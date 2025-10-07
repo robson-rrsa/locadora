@@ -5,6 +5,7 @@ const { TableClient, TableServiceClient } = require("@azure/data-tables");
 const { BlobServiceClient } = require("@azure/storage-blob");
 const multer = require('multer');
 const path = require('path');
+const serverless = require('serverless-http');
 
 const app = express();
 app.use(cors());
@@ -415,7 +416,9 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 const PORT = process.env.PORT || 3000;
 
-// Inicialização Azure (tabelas e container)
+
+
+// Inicializa recursos Azure assim que o arquivo é carregado
 (async () => {
     try {
         await criarContainer();
@@ -426,11 +429,11 @@ const PORT = process.env.PORT || 3000;
     }
 })();
 
-// Se estiver rodando localmente, starta o servidor
+// Roda localmente
 if (require.main === module) {
     const PORT = process.env.PORT || 3000;
     app.listen(PORT, () => console.log(`Servidor rodando localmente na porta ${PORT}`));
 }
 
-// Exporta app para Vercel
-module.exports = app;
+// Exporta app adaptado para Vercel
+module.exports = serverless(app);
